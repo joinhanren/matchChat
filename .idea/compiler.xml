@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="cloud-user-service" />
+        <module name="cloud-life" />
+        <module name="cloud-chat-api" />
+        <module name="cloud-chat-model" />
+        <module name="cloud-chat-service" />
+        <module name="cloud-user-model" />
+        <module name="cloud-user-api" />
+        <module name="email" />
+        <module name="cloud-gateway" />
+        <module name="cloud-mate" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cloud-utils" target="13" />
+      <module name="untitled" target="13" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

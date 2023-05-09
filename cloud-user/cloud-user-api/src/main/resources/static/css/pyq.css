@@ -1,0 +1,496 @@
+html{
+    Scroll-behavior: smooth;
+}
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+body{
+    background-color: #f9f9f9;
+}
+.root{
+    width: 560px;
+    min-height: 800px;
+    margin: 10px auto;
+    background: #fff;
+    border-radius: 4px;
+}
+.pyqname{
+    width: 560px;
+    height: 0px;
+    position: fixed;
+    /* left: 0; */
+    top: 0;
+    background: #f3f3f3ae;
+    z-index: 10;
+    text-align: center;
+    font-size: 12px;
+    line-height: 26px;
+    color: #9e9e9e;
+    user-select: none;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: all 0.5s;
+}
+/* 头部 */
+.title{
+    width: 100%;
+    height: 330px;
+    position: relative;
+}
+#titlebg{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px 6px 0 0;
+}
+.title #m_name{
+    max-width: 10em;
+    height: 20px;
+    color: #fff;
+    position: absolute;
+    right: 120px;
+    bottom: 20px;
+    /* 文字超出变成... */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 禁止文字换行 */
+    white-space: nowrap;
+    /* 禁止选中字符 */
+    user-select: none;
+}
+.my_headphoto_box{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    right: 30px;
+    bottom: -12px;
+}
+#m_photo{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+/* 主内容 */
+.main{
+    
+    min-height: 400px;
+    padding: 0 30px 0 74px;
+}
+.friend{
+    position: relative;
+    margin-top: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f3f3;
+}
+.friend:first-child{
+    margin-top: 40px;
+}
+/* 朋友内容 */
+.friendphoto_box{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: -50px;
+    top: 0;
+}
+.friendphoto_box .f_photo{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.f_name{
+    color: #576bb9;
+    white-space: nowrap;
+    cursor: default;
+    font-size: 16px;
+}
+.f_infobox{
+    padding-top: 5px;
+}
+.f_infobox *{
+    margin-top: 5px;
+}
+/* 文本内容 */
+.f_infobox p{
+    /* 设置回车换行 */
+    white-space: pre-line;
+    font-size: 16px;
+}
+/* 带图片内容 */
+.f_img_box{
+    font-size: 0;
+}
+.img_box{
+    width: 146px;
+    height: 140px;
+    display: inline-block;
+    margin: 6px 6px 0 0;
+}
+.img_box img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+    /* 图片大图 */
+.imgfull_box, .spbox{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgb(0, 0, 0,0.82);
+    z-index: 100;
+    display: none;
+}
+.imgfull{
+    width: 70%;
+    height: 80%;
+    text-align: center;
+    position: relative;
+    left: 15%;
+    top: 10%;
+}
+.imgfull img{
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+}
+.close_img{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 0;
+    right: -40px;
+    border-radius: 100%;
+    cursor: pointer;
+    font-size: 46px;
+    color: #fff;
+    line-height: 35px !important;
+    text-align: center;
+    opacity: 0.6;
+    transition: all 0.6s;
+}
+.close_img:hover{
+    transform: rotate(180deg);
+}
+/* 更多 */
+.more_box span{
+    font-size: 12px;
+    color: #9e9e9e;
+}
+
+.more{
+    float: right;
+    font-size: 30px;
+    color: #576bb9;
+    width: 32px;
+    height: 20px;
+    line-height: 18px;
+    vertical-align: top;
+    text-align: center;
+    background: #f7f7f7;
+    border-radius: 4px;
+    cursor: pointer;
+    /* 禁止选中字符 */
+    user-select: none;
+}
+.more:hover{
+    background-color: #dfdfdf;
+}
+.more_box{
+    width: 100%;
+    position: relative;
+    margin:6px 0 3px 0;
+}
+.cmnt_btn{
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    bottom: -3px;
+    right: 40px;
+    font-size: 14px;
+    color: #fff;
+    background: #4c4c4c;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 6px;
+    display: none;
+}
+.cmnt_btn:hover{
+    background: #444444;
+}
+
+/* 朋友评论 */
+.f_cmnt_box{
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #f7f7f7;
+    padding: 14px 14px 0 14px;
+    border-radius: 6px;
+}
+.f_cmnt_box>div{
+    margin-top: 6px;
+}
+.f_cmnt_box>div:first-child{
+    margin-top: 0;
+}
+.f_cmnt_box>div:last-child{
+    padding-bottom: 14px;
+    /* 后期js点击加此线 */
+    /* border-bottom: 1px solid #dddddd; */
+}
+.cmnt_f_name{
+    display: inline-block;
+    max-width: 10em;
+    color: #576b95;
+    cursor: default;
+    /* 文字超出变成... */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 禁止文字换行 */
+    white-space: nowrap;
+    vertical-align: top;
+}
+.f_cmnt span{
+    margin: 0 4px;
+    vertical-align: top;
+}
+.f_cmnt{
+    /* 回车换行，合并空白符 */
+    white-space: pre-line;
+}
+
+/* 发送评论 */
+.cmnt_box{
+    width: 100%; 
+    /* height: 100px; */
+    height: 0;
+    background-color: #f7f7f7;
+    border-radius: 6px;
+    /* 通过js加 */
+    /* padding: 8px 14px; */
+    padding: 0 14px;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: all 0.6s;
+}
+.cmnt_info{
+    width: 100%;
+    height: 84px;
+    border: 2px solid #07c160;
+    border-radius: 6px;
+    background-color: #fff;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.cmnt_info textarea{
+    width: 100%;
+    height: 45px;
+    line-height: 24px;
+    border: none;
+    resize: none;
+    font-size: 16px;
+}
+.cmnt_info button{
+    width: 70px;
+    height: 30px;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    background-color: #07c160;
+    font-weight: 100;
+    cursor: pointer;
+}
+.cmnt_info button:hover{
+    background-color: #38cd7f;
+}
+
+/* 朋友评论与发送评论同时显示时
+    由于无法选中前一元素
+    故设置点击事件修改朋友评论边角及分割线
+*/
+.f_cmnt_box+.cmnt_box{
+    border-radius: 0 0 6px 6px;
+}
+
+/* 视频 */
+.f_video{
+    max-width: 80%;
+    max-height: 460px;
+    margin-top: 10px;
+}
+
+/* 发送朋友圈 */
+/* 保持统一，给title img的border-radius也改为6 */
+/* 代码复用，在图片大图.imgfull_box后加“, .spbox” */
+/* 发送朋友圈主体 */
+.spmain{
+    width: 560px;
+    max-height: 90%;
+    overflow: scroll;
+    background: #f9f9f9;
+    border-radius: 6px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 20px;
+    transition: all 0.6s;
+}
+.spmain::-webkit-scrollbar{
+    display: none;
+}
+.spmain h3{
+    font-weight: 100;
+}
+.spmain textarea{
+    width: 100%;
+    height: 115px;
+    /* 禁止用户调整大小 */
+    resize: none;
+    border-radius: 6px;
+    margin: 20px 0 10px 0;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 20px;
+    border: 2px solid #07c160;
+}
+/* 文本域内滚动条 */
+.spmain textarea::-webkit-scrollbar{
+    width: 5px;
+}
+.spmain textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+.spmain textarea::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 4px;
+}
+.chose div{
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+}
+.chose span{
+    margin:0 8px;
+    font-size: 14px;
+}
+.mediabox{
+    max-height: 450px;
+    overflow: hidden;
+}
+.sp_imgallbox div,#addImage div{
+    width: 140px;
+    height: 140px;
+    background: #f3f3f3;
+    /*display: inline-block;*/
+    float: left;
+    margin: 10px 10px 0 0;
+    border-radius: 6px;
+    /*background: url(../img/addimgbg.png);*/
+}
+
+#addImage div{
+    cursor: pointer;
+    background: url(../img/addimgbg.png);
+}
+
+
+.sp_imgallbox img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.mediabox video{
+    max-width: 80%;
+    max-height: 460px;
+}
+/* 发送朋友圈按钮 */
+.spbtn i, .btt i{
+    background: #f3f3f350;
+    backdrop-filter: blur(10px);
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+}
+.spbtnf{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 0;
+}
+.spbtnm{
+    position: fixed;
+    margin-left: 560px;
+    top: 88%;
+    z-index: 10;
+}
+.spbtnf i{
+    border-top-right-radius: 6px;
+}
+.spbtnm i{
+    border-radius: 100%;
+    background: #dedede;
+    transform: scale(0);
+    transition: all 0.5s;
+}
+.btt{
+    top: 80%;
+}
+/* 关闭发送朋友圈按钮 */
+.spbtnbox{
+    margin-top: 20px;
+    height: 30px;
+    text-align: center;
+}
+.spbtnbox *{
+    display: inline-block;
+    width: 70px;
+    height: 30px;
+    line-height: 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #cecece;
+    color: #fff;
+    margin: 0 60px;
+    vertical-align: middle;
+}
+.spbtnbox button:first-child{
+    background: #07c160;
+}
+.spbtnbox button:first-child:hover{
+    background: #38cd7f;
+}
+.close_sp_rt{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    text-align: center;
+    border-top-right-radius: 6px;
+    cursor: default;
+    transition: all 0.3s;
+}
+.close_sp_rt:hover{
+    background: #ff0000;
+}

@@ -1,0 +1,25 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: cloud-life
+
+  cloud:
+    nacos:
+      server-addr: 192.168.133.248:8848
+
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql:// 192.168.133.248/matchChat?characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+#feign:
+#  client:
+#    config:
+#      default:
+#        loggerLevel: full
+#        requestInterceptors:
+#          - com.join.config.FeignConfig

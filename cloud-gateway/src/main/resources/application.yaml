@@ -1,0 +1,42 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: cloud-gateway
+
+  cloud:
+    nacos:
+      server-addr: 192.168.133.248:8848
+
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true   #开启从注册中心动态创建路由，利用微服务名创建路由
+      routes:
+        - id: user
+          uri: lb://cloud-user
+          predicates:
+            - Method=GET,POST
+            - Path=/user/**,/loading.html,/mate.html,/activity.html,/login.html,/main.html,/register.html,/img/**,/assets/**,/avatar/**,/css/**,/js/**,/util/**
+#        - id: websocket
+#          uri: lb://ws:chat
+#          predicates:
+#            - Path=/chat
+
+        - id: chat
+          uri: lb://cloud-chat
+          predicates:
+            - Path=/chat/**,/audio/**,/chatFile/**
+        - id: life
+          uri: lb://cloud-life
+          predicates:
+            - Path=/activity/**,/video/**,/publish/**,/illustration/**
+        - id: mate
+          uri: lb://cloud-mate
+          predicates:
+            - Path=/mate/**
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: debug

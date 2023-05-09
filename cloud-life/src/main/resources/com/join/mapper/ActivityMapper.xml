@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.join.mapper.ActivityMapper">
+
+    <resultMap id="activity" type="com.join.entity.Activity">
+        <id column="id" property="id"></id>
+        <result column="create_time" property="createTime"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="userid" property="userid"/>
+        <result column="subsidiary_type" property="subsidiaryType"/>
+        <result column="subsidiary" property="subsidiary"/>
+        <result column="avatar" property="avatar"/>
+        <result column="nick_name" property="nickName"/>
+    </resultMap>
+
+    <select id="queryFriendActivity" resultType="com.join.entity.Activity" resultMap="activity">
+        SELECT
+            activity.id,
+            activity.content,
+            activity.subsidiary,
+            activity.subsidiary_type,
+            activity.create_time,
+            activity.userid,
+            activity.`status`,
+            u.avatar,
+            u.nick_name
+        FROM
+            sys_activity activity
+                LEFT JOIN sys_friends friends ON friends.friend_id = activity.userid
+                LEFT JOIN sys_user u ON activity.userid = u.id
+        WHERE
+            friends.user_id = #{id}
+        ORDER BY
+            activity.create_time DESC;
+    </select>
+    <select id="queryMyActivity" resultType="com.join.entity.Activity" resultMap="activity">
+        SELECT
+            activity.id,
+            activity.content,
+            activity.subsidiary,
+            activity.subsidiary_type,
+            activity.create_time,
+            activity.userid,
+            activity.`status`,
+            u.avatar,
+            u.nick_name
+        FROM
+            sys_activity activity LEFT JOIN sys_user u ON u.id=activity.userid
+        WHERE
+            activity.userid = #{id}
+        ORDER BY
+            activity.create_time DESC;
+    </select>
+
+    <insert id="insertActivity" parameterType="com.join.entity.Activity">
+        insert into sys_activity (content, subsidiary, subsidiary_type, create_time, userid)
+        values (#{content},#{subsidiary},#{subsidiaryType},#{createTime},#{userid});
+    </insert>
+
+</mapper>

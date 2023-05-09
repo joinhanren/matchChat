@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zn-CH">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朋友圈</title>
+    <link rel="stylesheet" href="css/pyq.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/ionicons/2.0.1/css/ionicons.min.css">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/ajaxfileupload.js"></script>
+</head>
+
+<body>
+<!-- 发送朋友圈 -->
+<div class="spbox">
+    <div class="spmain">
+        <div class="close_sp_rt close_sp">×</div>
+        <h3>发表朋友圈</h3>
+        <form action="#">
+            <textarea name="" id="content" required placeholder="有什么新鲜事分享给大家？"></textarea>
+            <!-- 限制上传图片 -->
+            <input type="file" id="filei" accept="image/*" multiple style="display: none;">
+            <!-- 限制上传视频 -->
+            <input type="file" id="filev" accept="video/*" style="display: none;">
+            <!-- 法1.隐藏上传按钮，通过点击事件触发
+                优点：占用空间小  缺点：无法显示文件名 -->
+            <!--            <div class="chose">-->
+            <!--                <div class="choseimg" onclick="uimg()">上传图片</div>-->
+            <!--                <span>|</span>-->
+            <!--                <div class="chosevideo" onclick="uvideo()">上传视频</div>-->
+            <!--            </div>-->
+            <!-- 到这里结束 -->
+            <div class="mediabox">
+                <div class="sp_imgallbox">
+                    <!--                    <div onclick="uploadImage()"></div>-->
+                    <!--                    <div><img src="img/6988e509881b11ebb6edd017c2d2eca2.jpg" alt=""></div>-->
+                    <!--                    <div></div>-->
+                </div>
+                <div id="addImage">
+                    <div onclick="uploadImage()"></div>
+                </div>
+            </div>
+            <!-- 法2.直接点击上传 -->
+            <!-- <input type="file" accept="image/*" multiple >
+            <input type="file" accept="video/*"> -->
+
+            <div class="spbtnbox">
+                <button type="button" id="publish">发布</button>
+                <div class="close_sp">取消</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="imgfull_box">
+    <div class="imgfull">
+        <div class="close_img">×</div>
+        <img alt="">
+    </div>
+</div>
+<div class="root">
+    <!-- 发送朋友圈按钮——动 -->
+    <div class="spbtn spbtnm">
+        <i class="icon ion-compose"></i>
+    </div>
+    <!-- 返回顶部 -->
+    <div class="spbtnm btt">
+        <a href="#">
+            <i class="icon ion-arrow-up-c"></i>
+        </a>
+    </div>
+    <div class="pyqname">
+        朋友圈
+    </div>
+    <div class="title">
+        <!-- 发送朋友圈按钮——titlt里 -->
+        <div class="spbtn spbtnf">
+            <i class="icon ion-compose"></i>
+        </div>
+        <img src="img/01-1.png" alt="" id="titlebg">
+        <!--        <div id="m_name">用户名，最大10字符，超出隐藏</div>-->
+        <!--        <div class="my_headphoto_box">-->
+        <!--            <img src="img/photo-m.jpg" alt="" id="m_photo">-->
+        <!--        </div>-->
+    </div>
+
+    <div class="main">
+        <!-- 纯文本 -->
+        <!--        <div class="friend">-->
+        <!--            <div class="friendphoto_box">-->
+        <!--                <img src="img/photo-f.jpg" alt="" class="f_photo">-->
+        <!--            </div>-->
+        <!--            <div class="f_name">朋友名称</div>-->
+        <!--            <div class="f_infobox">-->
+        <!--                <p>内容内容内容-->
+        <!--                    内容内容-->
+        <!--                    内容内容内容内容-->
+        <!--                </p>-->
+        <!--            </div>-->
+        <!--            <div class="more_box">-->
+        <!--                <span>5分钟前</span>-->
+        <!--                <div class="more">··</div>-->
+        <!--                <div class="cmnt_btn">评论</div>-->
+        <!--            </div>-->
+        <!--            <div class="cmnt_box">-->
+        <!--                <div class="cmnt_info">-->
+        <!--                    <form action="">-->
+        <!--                        <textarea name="" id="" placeholder="评论"></textarea>-->
+        <!--                        <button type="submit">发送</button>-->
+        <!--                    </form>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+        <!-- 文本加图片 -->
+        <!--        <div class="friend">-->
+        <!--            <div class="friendphoto_box">-->
+        <!--                <img src="img/photo-f.jpg" alt="" class="f_photo">-->
+        <!--            </div>-->
+        <!--            <div class="f_name">朋友名称</div>-->
+        <!--            <div class="f_infobox">-->
+        <!--                <p>内容内容内容-->
+        <!--                    内容内容-->
+        <!--                    请看图答题：-->
+        <!--                </p>-->
+        <!--                <div class="f_img_box">-->
+        <!--&lt;!&ndash;                    <div class="img_box">&ndash;&gt;-->
+        <!--&lt;!&ndash;                        <img src="img/9439aad9fd9a455b9fe428221378afd2.png" alt="">&ndash;&gt;-->
+        <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+        <!--                    <div class="img_box">-->
+        <!--                        <img src="img/6988e509881b11ebb6edd017c2d2eca2.jpg" alt="">-->
+        <!--                    </div>-->
+        <!--                    <div class="img_box">-->
+        <!--                        <img src="img/c53c811f880411ebb6edd017c2d2eca2.jpg" alt="">-->
+        <!--                    </div>-->
+        <!--                    <div class="img_box">-->
+        <!--                        <img src="img/20230309210930.jpg" alt="">-->
+        <!--                    </div>-->
+        <!--                    <div class="img_box">-->
+        <!--                        <img src="img/20230309212152.jpg">-->
+        <!--                    </div>-->
+        <!--                    <div class="img_box">-->
+        <!--                        &lt;!&ndash; <img src="https://bing.ioliu.cn/v1/rand" alt=""> &ndash;&gt;-->
+        <!--                        <img src="img/微信图片_20230107155836.jpg" alt="">-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="more_box">-->
+        <!--                <span>5分钟前</span>-->
+        <!--                <div class="more">··</div>-->
+        <!--                <div class="cmnt_btn">评论</div>-->
+        <!--            </div>-->
+        <!--            <div class="cmnt_box">-->
+        <!--                <div class="cmnt_info">-->
+        <!--                    <form action="">-->
+        <!--                        <textarea name="" id="" placeholder="评论"></textarea>-->
+        <!--                        <button type="submit">发送</button>-->
+        <!--                    </form>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+        <!-- 带评论 -->
+        <!--        <div class="friend">-->
+        <!--            <div class="friendphoto_box">-->
+        <!--                <img src="img/photo-f.jpg" alt="" class="f_photo">-->
+        <!--            </div>-->
+        <!--            <div class="f_name">朋友名称</div>-->
+        <!--            <div class="f_infobox">-->
+        <!--                <p>这是一个-->
+        <!--                    带有朋友评论-->
+        <!--                    的内容-->
+        <!--                </p>-->
+        <!--            </div>-->
+        <!--            <div class="more_box">-->
+        <!--                <span>5分钟前</span>-->
+        <!--                <div class="more">··</div>-->
+        <!--                <div class="cmnt_btn">评论</div>-->
+        <!--            </div>-->
+        <!--            <div class="f_cmnt_box">-->
+        <!--                <div>-->
+        <!--                    <div class="f_cmnt">-->
+        <!--                        <div class="cmnt_f_name">朋友名称，不超过10字符</div>-->
+        <!--                        <span>:</span>朋友评论内容朋友评论内容朋友评论内容朋友评论内容朋友评论内容-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div>-->
+        <!--                    <div class="f_cmnt">-->
+        <!--                        <div class="cmnt_f_name">朋友名称，不超过10字符</div>-->
+        <!--                        <span>:</span>第二个评论，第二个评论第二个评论，第二个评论第二个评论，第二个评论第二个评论，第二个评论-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div>-->
+        <!--                    <div class="f_cmnt">-->
+        <!--                        <div class="cmnt_f_name">朋友名称，不超过10字符</div>-->
+        <!--                        <span>:</span>自我介绍一下-->
+        <!--                        看~-->
+        <!--                        人~-->
+        <!--                        真~-->
+        <!--                        准~-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="cmnt_box">-->
+        <!--                <div class="cmnt_info">-->
+        <!--                    <form action="">-->
+        <!--                        <textarea name="" id="" placeholder="评论"></textarea>-->
+        <!--                        <button type="submit">发送</button>-->
+        <!--                    </form>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+        <!-- 视频 -->
+        <!--        <div class="friend">-->
+        <!--            <div class="friendphoto_box">-->
+        <!--                <img src="img/photo-f.jpg" alt="" class="f_photo">-->
+        <!--            </div>-->
+        <!--            <div class="f_name">朋友名称</div>-->
+        <!--            <div class="f_infobox">-->
+        <!--                <video controls class="f_video">-->
+        <!--                    <source src="video/花月成双 【BDF2021主题曲】.mp4">-->
+        <!--                </video>-->
+        <!--            </div>-->
+        <!--            <div class="more_box">-->
+        <!--                <span>5分钟前</span>-->
+        <!--                <div class="more">··</div>-->
+        <!--                <div class="cmnt_btn">评论</div>-->
+        <!--            </div>-->
+        <!--            <div class="f_cmnt_box">-->
+        <!--                <div>-->
+        <!--                    <div class="f_cmnt">-->
+        <!--                        <div class="cmnt_f_name">朋友名称，不超过10字符</div>-->
+        <!--                        <span>:</span>朋友评论内容朋友评论内容朋友评论内容朋友评论内容朋友评论内容-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="cmnt_box">-->
+        <!--                <div class="cmnt_info">-->
+        <!--                    <form action="">-->
+        <!--                        <textarea name="" id="" placeholder="评论"></textarea>-->
+        <!--                        <button type="submit">发送</button>-->
+        <!--                    </form>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+        <!-- 竖屏视频 -->
+        <!--        <div class="friend">-->
+        <!--            <div class="friendphoto_box">-->
+        <!--                <img src="img/photo-f.jpg" alt="" class="f_photo">-->
+        <!--            </div>-->
+        <!--            <div class="f_name">朋友名称</div>-->
+        <!--            <div class="f_infobox">-->
+        <!--                <p>这是一个竖屏视频</p>-->
+        <!--                <video src="video/肤白貌美大长腿.mp4" controls class="f_video"></video>-->
+        <!--            </div>-->
+        <!--            <div class="more_box">-->
+        <!--                <span>5分钟前</span>-->
+        <!--                <div class="more">··</div>-->
+        <!--                <div class="cmnt_btn">评论</div>-->
+        <!--            </div>-->
+        <!--            <div class="f_cmnt_box">-->
+        <!--                <div>-->
+        <!--                    <div class="f_cmnt">-->
+        <!--                        <div class="cmnt_f_name">朋友名称，不超过10字符</div>-->
+        <!--                        <span>:</span>朋友评论内容朋友评论内容朋友评论内容朋友评论内容朋友评论内容-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="cmnt_box">-->
+        <!--                <div class="cmnt_info">-->
+        <!--                    <form action="">-->
+        <!--                        <textarea name="" id="" placeholder="评论"></textarea>-->
+        <!--                        <button type="submit">发送</button>-->
+        <!--                    </form>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+    </div>
+</div>
+</body>
+
+<script>
+    let token = sessionStorage.getItem("token");
+    let imagesUrl = null;
+    window.onload = function () {
+        $.ajax({
+            url: "/activity/user",
+            method: "get",
+            data: {"id": sessionStorage.getItem("id")},
+            headers: {"Authorization": token},
+            success: function (result) {
+                let user = result.data;
+                console.log(result.data);
+                let html = " <img src=\"img/01-1.png\" alt=\"\" id=\"titlebg\">\n" +
+                    "        <div id=\"m_name\">" + user.nickName + "</div>\n" +
+                    "        <div id='myTrends' class=\"my_headphoto_box\">\n" +
+                    "            <img src=" + user.avatar + " alt=\"\" id=\"m_photo\">\n" +
+                    "        </div>";
+                $(".title").html(html);
+            }
+        });
+        getActivity();
+    }
+
+    /**
+     * 获取好友列表的动态
+     */
+    function getActivity() {
+        $.ajax({
+            url: "/activity/activityList",
+            method: "get",
+            data: {"id": sessionStorage.getItem("id")},
+            headers: {"Authorization": token},
+            success: function (result) {
+                console.log(result.data);
+                let list = result.data;
+                rendering(list);
+            }
+        });
+    }
+
+
+    $(document).on("click", "#myTrends", function () {
+        $.ajax({
+            url: "/activity/myTrends",
+            method: "get",
+            headers: {"Authorization": token},
+            success: function (result) {
+                console.log(result.data);
+                let list = result.data;
+                rendering(list);
+            }
+        });
+    });
+
+    /**
+     * 渲染数据
+     */
+    function rendering(list) {
+        let html = "";
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].subsidiaryType == "text") {
+                html += "       <div class=\"friend\">\n" +
+                    "            <div class=\"friendphoto_box\">\n" +
+                    "                <img src=" + list[i].avatar + " alt=\"\" class=\"f_photo\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"f_name\">" + list[i].nickName + "</div>\n" +
+                    "            <div class=\"f_infobox\">\n" +
+                    "                <p>" + list[i].content +
+                    "                </p>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"more_box\">\n" +
+                    "                <span>5分钟前</span>\n" +
+                    "                <div class=\"more\">··</div>\n" +
+                    "                <div class=\"cmnt_btn\">评论</div>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"cmnt_box\">\n" +
+                    "                <div class=\"cmnt_info\">\n" +
+                    "                    <form action=\"\">\n" +
+                    "                        <textarea name=\"\" id=\"\" placeholder=\"评论\"></textarea>\n" +
+                    "                        <button type=\"submit\">发送</button>\n" +
+                    "                    </form>\n" +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "        </div>";
+            } else if (list[i].subsidiaryType == "image") {
+                html += "  <div class=\"friend\">\n" +
+                    "            <div class=\"friendphoto_box\">\n" +
+                    "                <img src=" + list[i].avatar + " alt=\"\" class=\"f_photo\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"f_name\">" + list[i].nickName + "</div>\n" +
+                    "            <div class=\"f_infobox\">\n" +
+                    "                <p>" + list[i].content +
+                    "                </p>\n" +
+                    "                <div class=\"f_img_box\">\n" +
+                    imageBox(list[i].subsidiary) +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"more_box\">\n" +
+                    "                <span>5分钟前</span>\n" +
+                    "                <div class=\"more\">··</div>\n" +
+                    "                <div class=\"cmnt_btn\">评论</div>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"cmnt_box\">\n" +
+                    "                <div class=\"cmnt_info\">\n" +
+                    "                    <form action=\"\">\n" +
+                    "                        <textarea name=\"\" id=\"\" placeholder=\"评论\"></textarea>\n" +
+                    "                        <button type=\"submit\">发送</button>\n" +
+                    "                    </form>\n" +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "        </div>";
+            }
+        }
+        $(".main").html(html);
+    }
+
+
+    // 上传图片
+    function uploadImage() {
+        $("#filei").click();
+    }
+
+    let stat = true;
+    $("#filei").on("change", function () {
+        let files = $("#filei").prop("files");
+        console.log(files[0]);
+        let form = new FormData();
+        form.append("name", files[0].name);
+        form.append("file", files[0]);
+        $.ajax({
+            url: "/publish/uploadImage",
+            method: "post",
+            data: form,
+            /**
+             *必须false才会自动加上正确的Content-Type
+             */
+            contentType: false,
+            /**
+             * 必须false才会避开jQuery对 formdata 的默认处理
+             * XMLHttpRequest会对 formdata 进行正确的处理
+             */
+            processData: false,
+            headers: {"Authorization": token},
+            success: function (data) {
+                console.log(data.data);
+                setImagesUrl(data.data);
+                let html = " <div><img src=" + data.data + " alt=\"\"></div>";
+                $(".sp_imgallbox").append(html);
+
+            }
+        });
+    });
+
+    /**
+     * 发布
+     */
+    $("#publish").click(function () {
+        console.log("发布");
+        let content = $("#content").val();
+        let subsidiaryType = "text";
+        if (imagesUrl != null) {
+            subsidiaryType = "image";
+        }
+        let activityVo = {
+            "content": content,
+            "subsidiaryType": subsidiaryType,
+            "subsidiary": imagesUrl,
+        };
+        if (content != "") {
+            $.ajax({
+                url: "/publish/publishMoment",
+                method: "put",
+                contentType: "application/json;charset=UTF-8",
+                data: JSON.stringify(activityVo),
+                headers: {"Authorization": token},
+                success: function (data) {
+                    console.log(data.data);
+                    if (data.data == true) {
+                        alert("发布成功！");
+                        window.location.reload();
+                    } else {
+                        alert("发布失败！")
+                    }
+                }
+            });
+
+        } else {
+            alert("试着写点什么吧")
+        }
+    });
+
+
+    /**
+     *
+     * 设置动态中的图片
+     */
+    function setImagesUrl(url) {
+        if (imagesUrl == null) {
+            imagesUrl = url;
+        } else {
+            imagesUrl += "," + url;
+        }
+    }
+
+    /**
+     * 处理图片字符串
+     * @param str
+     */
+    function imageBox(str) {
+        let images = str.split(",");
+        let html = "";
+        for (let i = 0; i < images.length; i++) {
+            html += " <div class=\"img_box\">\n" +
+                "       <img src=" + images[i] + " alt=\"\">\n" +
+                "     </div>";
+        }
+        return html;
+    }
+
+
+</script>
+
+<script>
+
+    let wh = $(window).height() * 0.8;
+    // 取整
+    let iblh = Math.floor(wh);
+
+    // 测试获取高度
+    function testh() {
+        alert($(window).scrollTop());
+        alert($(window).width());
+        alert($(window).height());
+        alert(iblh);
+    }
+
+    // 图片点击查看全图
+    $(document).on("click", ".img_box img", function () {
+        $(".imgfull_box").show();
+        let imgsrc = $(this).attr("src");
+        $(".imgfull_box img").attr("src", imgsrc)
+        $(".imgfull").css({"line-height": iblh + "px"});
+    });
+
+    // 点击关闭和图片周围隐藏
+    $(".imgfull_box").click(function () {
+        $(".imgfull_box").hide();
+    });
+    $(".imgfull_box img").click(function (event) {
+        event.stopPropagation();
+    });
+
+
+    $(document).on("click", ".more", function () {
+
+    })
+
+
+    // 上传视频
+    function uvideo() {
+        return $("#filev").click();
+    }
+
+    $(function () {
+
+        // 页面滚动到一定距离添加朋友圈标题
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 340) {
+                $(".pyqname").css({"height": "26px"});
+                $(".spbtnm i").css({"transform": "scale(1)"})
+            } else {
+                $(".pyqname").css({"height": "0"});
+                $(".spbtnm i").css({"transform": "scale(0)"})
+            }
+        });
+
+        // 评论区
+        // $(".more").click(function(){
+        //     $(".cmnt_btn").css({"display":"block"});
+        // });
+        $(document).click(function () {
+            $(".cmnt_btn").hide();
+            $(".cmnt_box").css({"height": "0", "padding": "0 14px"});
+            $(".f_cmnt_box>div").css({"border-bottom": "none"});
+            $(".f_cmnt_box").css({"border-radius": "6px"});
+        });
+        $(".more").click(function (event) {
+            // siblinge()方法返回被选元素的同级元素
+            $(this).siblings(".cmnt_btn").show();
+            // 在当前事件里阻止点击页面任何地方隐藏发送按钮的冒泡事件发生
+            event.stopPropagation();
+        });
+        $(".cmnt_btn").click(function (event) {
+            $(".cmnt_btn").hide();
+            // parent()方法返回被选元素的直接父元素
+            $(this).parent().siblings(".cmnt_box").css({"height": "100px", "padding": "8px 14px"});
+            $(this).parent().siblings(".f_cmnt_box").css({"border-radius": "6px 6px 0 0"});
+            $(this).parent().siblings(".f_cmnt_box").children("div").last().css({"border-bottom": "1px solid #dddddd"});
+            event.stopPropagation();
+        });
+        $(".cmnt_box").click(function (event) {
+            event.stopPropagation();
+        });
+
+
+        // 发朋友圈按钮
+        let spd = $(".spbox").css("display");
+        $(".spbtn").click(function () {
+            if (spd == "none") {
+                $(".spbox").show();
+            } else {
+                $(".spbox").hide();
+            }
+        });
+        // 关闭发送朋友圈按钮
+        $(".close_sp").click(function () {
+            $(".spbox").css({"display": "none"});
+        });
+
+    });
+</script>
+
+</html>

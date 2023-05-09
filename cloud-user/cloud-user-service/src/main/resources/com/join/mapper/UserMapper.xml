@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.join.mapper.UserMapper">
+
+
+    <select id="checkUserName" parameterType="string" resultType="string">
+        select user_name
+        from sys_user
+        where user_name=#{username}
+        limit 1;
+    </select>
+
+    <select id="checkEmail" parameterType="string" resultType="string">
+        select email
+        from sys_user
+        where email=#{email}
+        limit 1;
+    </select>
+    <select id="selectFriendsById" resultType="com.join.entity.User" resultMap="com.join.mapper.LoginMapper.user">
+        SELECT u2.id,u2.nick_name,u2.user_name,u2.avatar
+        FROM sys_user u1
+                 LEFT  JOIN sys_friends f ON u1.id=f.user_id
+                 LEFT JOIN sys_user  u2 on f.friend_id=u2.id
+
+        WHERE u1.id=#{id};
+
+    </select>
+    <select id="queryUserById" resultType="com.join.entity.User">
+        select id, user_name, nick_name , status, email, phonenumber, sex, avatar from sys_user where id=#{id}
+    </select>
+</mapper>

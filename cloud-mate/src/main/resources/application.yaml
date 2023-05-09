@@ -1,0 +1,21 @@
+server:
+  port: 5000
+spring:
+  application:
+    name: cloud-mate
+
+  cloud:
+    nacos:
+      server-addr: 192.168.133.248:8848
+
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql:// 192.168.133.248/matchChat?characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  redis:
+    host: 192.168.133.248
+    port: 6379
+    timeout: 10s

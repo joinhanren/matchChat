@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"/>
+    <title>chat</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/recordmp3.js"></script>
+    <!-- 聊天框默认在最底显示 -->
+    <script type="text/javascript">
+        // $(document).ready(function () {
+        //     $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+        //     $('#chatBox').scrollLeft($('#chatBox')[0].scrollWidth);
+        //
+        //     $('#emoji_button').click(function () {
+        //         $('.emojiBox').show()
+        //     })
+        //     // $("body *:not(#emoji_button)").click(function(){
+        //     //     $('.emojiBox').hide()
+        //     // })
+        //     $(document).click(function () {
+        //         $('.emojiBox').hide()
+        //     })
+        //     $('#emoji_button').click(function (event) {
+        //         event.stopPropagation();
+        //     })
+        //     $('.emojiBox').click(function (event) {
+        //         event.stopPropagation();
+        //     })
+        // });
+
+
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <div class="leftSide">
+        <div class="header">
+            <div id="userHeadImg" class="userimg">
+                <!--                <img src="/headImage/123.jpg" class="cover">-->
+            </div>
+            <ul class="nav_icons">
+                <!--                <li>-->
+                <!--                    <ion-icon name="scan-circle-outline"></ion-icon>-->
+                <!--                </li>-->
+                <!--                <li>-->
+                <!--                    <ion-icon name="chatbox"></ion-icon>-->
+                <!--                </li>-->
+                <li onclick="activity()">
+                    <ion-icon name="ellipsis-vertical"></ion-icon>
+                </li>
+            </ul>
+        </div>
+        <div class="search_chat">
+            <div>
+                <input type="text" placeholder="寻找你想联系的人聊天">
+                <ion-icon name="search-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div id="chatList" class="chatlist">
+        </div>
+
+    </div>
+
+
+    <div class="rightSide">
+        <div class="header">
+            <div id="viewUser" class="imgText">
+
+                <!--                <div class="userimg">-->
+                <!--                    <img src="img1.jpg" class="cover">-->
+                <!--                </div>-->
+                <!--                <h4>张三<br><span>在线</span></h4>-->
+
+            </div>
+            <ul class="nav_icons" onclick="loading()">
+                <li>
+                    <ion-icon name="search-outline"></ion-icon>
+                </li>
+                <!--                <li>-->
+                <!--                    <ion-icon name="ellipsis-vertical"></ion-icon>-->
+                <!--                </li>-->
+            </ul>
+        </div>
+
+
+        <div id="chatBox" class="chatBox">
+
+        </div>
+
+        <form name="" method="post" action="#" class="chatBox_form">
+            <div class="chatBox_input">
+                <div class="emojiBox" style="display: none">
+
+                </div>
+                <div class="vchat">
+                    正在说话
+                </div>
+                <div id="videoView" style="display: none">
+                    <div id="friendVideo" style="background-color: #2f66ff;width: 275px;height:288px ">
+                        <video id="remote-video" style="width: 294px;height: 192px" autoplay playsinline></video>
+                    </div>
+                    <div id="myVideo" style="background-color: #13E8E9;width: 275px;height: 192px">
+                        <video id="local-video" style="width: 294px;height: 192px" muted autoplay playsinline></video>
+                    </div>
+                </div>
+                <div class="cinput chatBox_icon">
+                    <ion-icon name="happy-outline" class="left_icon" id="emoji_button"></ion-icon>
+                    <!--                    <ion-icon name="attach-outline" class="left_icon"></ion-icon>-->
+                    <input type="file" id="file" name="file" value="上传文件" style="display: none">
+                    <ion-icon name="folder-outline" id="folder" class="left_icon"></ion-icon>
+                    <ion-icon name="mic-outline" id="mic" class="left_icon vchat_btn"></ion-icon>
+                    <ion-icon name="videocam-outline" id="videoCall" class="video_call right_icon"></ion-icon>
+                    <ion-icon name="call-outline" id="audioCall" class="right_icon"></ion-icon>
+                </div>
+
+                <div class="cinput chatBox_message">
+                    <textarea name="" id="message" cols="" rows=""></textarea>
+                </div>
+                <div class="cinput chatBox_message_send">
+                    <input type="button" value="发送" id="message_send">
+                </div>
+            </div>
+        </form>
+        <!--
+        <ion-icon name="happy-outline"></ion-icon>
+        <ion-icon name="attach-outline"></ion-icon>
+        <input id="message" type="text" placeholder="输入聊天内容">
+        <ion-icon name="mic"></ion-icon>
+        -->
+    </div>
+</div>
+</div>
+
+<script>
+
+    let UserID = 0;
+    let CurrentChatID = 0;
+    let baseServerURL = "3s11e99263.picp.vip";
+    let token = sessionStorage.getItem("token");
+    /**
+     * 话筒状态
+     */
+    let isMic = false;
+    /**
+     * 好友列表
+     */
+    let friendList = null;
+    /**
+     *  初始化对象
+     */
+    let localStream = null;
+    let room = null;
+    let rtc = null;
+    let config = {
+        bundlePolicy: "max-bundle",
+        iceTransportPolicy: "all",//relay只能中继，all 为任何类型，可以p2p
+        rtcpMuxPolicy: "require",
+        iceServers: [{
+            "urls": "stun:192.168.133.248:3478"
+        }, {
+            "urls": [
+                // "turn:192.168.133.248:3478?transport=udp",
+                // "turn:192.168.133.248:3478?transport=tcp"],
+                "turn:192.168.133.248:3478",
+                "turn:192.168.133.248:3478"],
+            "credential": "123456",
+            "username": "root"
+        }]
+    };
+    let recorder = new MP3Recorder({
+        debug: true,
+        funOk: function () {
+            console.log('初始化成功');
+        },
+        funCancel: function (msg) {
+            console.log(msg);
+            recorder = null;
+        }
+    });
+    window.onload = function () {
+        let token = sessionStorage.getItem("token");
+        console.log(token);
+        /**
+         * 请求用户信息
+         */
+        $.ajax({
+            url: "/user/friends",
+            method: "get",
+            beforeSend: function (XMLHttpRequest) {
+                XMLHttpRequest.setRequestHeader("Authorization", token);
+            },
+            success: function (data) {
+                console.log(data);
+                let info = data.data
+                setUserID(info.id);
+                sessionStorage.setItem("myavatar", data.data.avatar);
+                sessionStorage.setItem("id", data.data.id);
+                let friends = info.friends;
+                friendList = friends;
+                let list = "";
+                let userImg = "    <img src=" + info.avatar + " class=\"cover\">";
+                $("#userHeadImg").html(userImg);
+                for (let index = 0; index < friends.length; index++) {
+                    let model = JSON.stringify(friends[index]);
+                    list += "    <div onclick='choseFriend(" + model + ")' class=\"block unread\">\n" +
+                        "                <div class=\"imgbx\">\n" +
+                        "                    <img src=" + friends[index].avatar + " class=\"cover\">\n" +
+                        "                </div>\n" +
+                        "                <div class=\"details\">\n" +
+                        "                    <div class=\"listHead\">\n" +
+                        "                        <h4>" + friends[index].nickName + "</h4>\n" +
+                        "                        <p class=\"time\">09:25</p>\n" +
+                        "                    </div>\n" +
+                        "                    <div class=\"message_p\">\n" +
+                        "                        <p>最近，项目很紧张，总是改bug，还要加班。</p>\n" +
+                        "                        <b>1</b>\n" +
+                        "                    </div>\n" +
+                        "                </div>\n" +
+                        "            </div>";
+                }
+                $("#chatList").html(list);
+            }
+        });
+    }
+
+    /**
+     * 当前好友是否在线
+     */
+    async function isOnline(id) {
+        let friend = null;
+        for (let i = 0; i < friendList.length; i++) {
+            if (friendList[i].id == id) {
+                friend = friendList[i];
+            }
+        }
+        $.ajax({
+            url: "/chat/isOnline",
+            method: "get",
+            data: {"id": id},
+            headers: {"Authorization": token},
+            success: function (res) {
+                let online = "不在线";
+                if (res.data) {
+                    online = "在线";
+                }
+                let view = "<div class=\"userimg\">\n" +
+                    "           <img src=" + friend.avatar + " class=\"cover\">\n" +
+                    "        </div>\n" +
+                    "        <h4>" + friend.nickName + "<br><span>" + online + "</span></h4>";
+                $("#viewUser").html(view);
+            }
+        });
+    }
+
+    /**
+     *  选择一个好友聊天
+     */
+    function choseFriend(model) {
+        isOnline(model.id);
+        setCurrentChatID(model.id);
+        $("#chatBox").html("");
+        /**获取和该好友的历史聊天记录
+         *
+         */
+        $.ajax({
+            url: "/chat/history",
+            method: "get",
+            data: {"currentChatID": getCurrentChatID()},
+            headers: {"Authorization": token},
+            success: function (data) {
+                console.log(data);
+                console.log(data.data)
+                console.log(data.data.data);
+                let chatHistory = data.data.data;
+                for (let i = 0; i < chatHistory.length; i++) {
+                    let res = chatHistory[i];
+                    let historyMessage = "";
+                    if (chatHistory[i].position == "left") {
+                        if (chatHistory[i].type == "text") {
+                            historyMessage = " <div class=\"message frnd_message\">\n" +
+                                "                <div class=\"chatBox_frndphoto\">\n" +
+                                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                                "                </div>\n" +
+                                "                <div class=\"message_all\">\n" +
+                                "                    <p>" + res.message + "<br><span>" + getMillisecondDate(res.sendTime) + "</span></p>\n" +
+                                "                </div>\n" +
+                                "            </div>";
+                        } else if (chatHistory[i].type == "audio") {
+                            historyMessage = " <div class=\"message frnd_message\">\n" +
+                                "                <div class=\"chatBox_frndphoto\">\n" +
+                                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                                "                </div>\n" +
+                                "                <div class=\"message_all\">\n" +
+                                "                   <audio class='au'  controls src='" + res.message + "'><br><span>" + getNowTime() + "</span></audio>" +
+                                "                </div>\n" +
+                                "            </div>";
+                        }else if (chatHistory[i].type == "img"){
+                            historyMessage=" <div class=\"message frnd_message\">\n" +
+                                "                <div class=\"chatBox_frndphoto\">\n" +
+                                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                                "                </div>\n" +
+                                "                <div class=\"message_all\">\n" +
+                                "                    <p><img src='"+res.message+"' style='object-fit: scale-down;max-height: 200px;max-width: 540px'><br><span>" + getNowTime() + "</span></p>\n" +
+                                "                </div>\n" +
+                                "            </div>";
+                        }
+
+                    } else {
+                        if (chatHistory[i].type == "text") {
+                            historyMessage = " <div class=\"message my_message\">\n" +
+                                "                <div class=\"chatBox_myphoto\">\n" +
+                                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_m\">\n" +
+                                "                </div>\n" +
+                                "                <div class=\"message_all\">\n" +
+                                "                    <p>" + res.message + "<br><span>" + getMillisecondDate(res.sendTime) + "</span></p>\n" +
+                                "                </div>\n" +
+                                "            </div>";
+                        } else if (chatHistory[i].type == "audio") {
+                            historyMessage = " <div class=\"message my_message\">\n" +
+                                "          <div class=\"chatBox_myphoto\">\n" +
+                                "             <img src=" + res.avatar + " alt=\"\" id=\"photo_m\">\n" +
+                                "          </div>\n" +
+                                "          <div class=\"message_all\">\n" +
+                                "             <audio class='au'  controls src='" + res.message + "'><br><span>" + getNowTime() + "</span></audio>" +
+                                "          </div>" +
+                                "      </div>";
+                        }else if (chatHistory[i].type == "img"){
+                            historyMessage =" <div class=\"message my_message\">\n" +
+                                "                <div class=\"chatBox_myphoto\">\n" +
+                                "                    <img src=" + sessionStorage.getItem("myavatar") + " alt=\"\" id=\"photo_m\">\n" +
+                                "                </div>\n" +
+                                "                <div class=\"message_all\">\n" +
+                                "                    <p><img src='" + res.message + "' style='object-fit: scale-down;max-height: 200px;max-width: 540px'><br><span>" + getNowTime() + "</span></p>\n" +
+                                "                </div>\n" +
+                                "            </div>";
+                        }
+
+                    }
+
+
+                    $("#chatBox").append(historyMessage);
+                }
+            }
+        })
+    }
+
+    let ws = new WebSocket("wss://3s11e99263.picp.vip/chat", token);
+    ws.onopen = function () {
+        console.log("建立连接...");
+    }
+    ws.onmessage = function (evt) {
+        let dataStr = evt.data;
+        let res = JSON.parse(dataStr);
+        console.log(res);
+        let otherMessage = "";
+        if (res.type == "text") {
+            otherMessage = " <div class=\"message frnd_message\">\n" +
+                "                <div class=\"chatBox_frndphoto\">\n" +
+                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                "                </div>\n" +
+                "                <div class=\"message_all\">\n" +
+                "                    <p>" + res.message + "<br><span>" + getNowTime() + "</span></p>\n" +
+                "                </div>\n" +
+                "            </div>";
+        } else if (res.type == "audio") {
+            otherMessage = " <div class=\"message frnd_message\">\n" +
+                "                <div class=\"chatBox_frndphoto\">\n" +
+                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                "                </div>\n" +
+                "                <div class=\"message_all\">\n" +
+                "                   <audio class='au' autoplay controls src='" + res.message + "'><br><span>" + getNowTime() + "</span></audio>" +
+                "                </div>\n" +
+                "            </div>";
+        } else if(res.type=="img"){
+            otherMessage = " <div class=\"message frnd_message\">\n" +
+                "                <div class=\"chatBox_frndphoto\">\n" +
+                "                    <img src=" + res.avatar + " alt=\"\" id=\"photo_f\">\n" +
+                "                </div>\n" +
+                "                <div class=\"message_all\">\n" +
+                "                    <p><img src='"+res.message+"' style='object-fit: scale-down;max-height: 200px;max-width: 540px'><br><span>" + getNowTime() + "</span></p>\n" +
+                "                </div>\n" +
+                "            </div>";
+        }else if (res.type == "join") {
+            room = res.message;
+            join();
+        } else if (res.type == "live") {
+            live();
+        } else if (res.type == "offer") {
+            offer(res);
+        } else if (res.type == "answer") {
+            answer(res);
+        } else if (res.type == "candidate") {
+            candidate(res);
+        }
+
+        $("#chatBox").append(otherMessage);
+        console.log(res);
+    }
+
+    ws.onclose = function () {
+        console.log("关闭连接")
+    }
+    ws.onerror = function () {
+        console.log("连接出错")
+    }
+
+    /**
+     *  回车键发送消息
+     */
+    $('#message').bind('keyup', function (event) {
+        if (event.keyCode == "13") {
+            sendMessage();
+        }
+    });
+
+    /**
+     *  发送按钮
+     */
+    $("#message_send").click(() => {
+        sendMessage();
+    })
+
+    /**
+     * 发送消息
+     */
+    function sendMessage() {
+        let message = $("#message").val();
+        if (message == "" || message == "\n" || message == null) {
+            alert("输入内容不能为空")
+            return false;
+        }
+        let json = {
+            "sendId": getUserID(),
+            "message": message,
+            "sendTime": getNowTime(),
+            "receiveId": getCurrentChatID(),
+            "currentMilliseconds": Date.now(),
+            "type": "text",
+        };
+        console.log(JSON.stringify(json));
+        console.log(getNowTime());
+        ws.send(JSON.stringify(json));
+        $("#message").val("");
+        let myMessage = " <div class=\"message my_message\">\n" +
+            "                <div class=\"chatBox_myphoto\">\n" +
+            "                    <img src=" + sessionStorage.getItem("myavatar") + " alt=\"\" id=\"photo_m\">\n" +
+            "                </div>\n" +
+            "                <div class=\"message_all\">\n" +
+            "                    <p>" + json.message + "<br><span>" + json.sendTime + "</span></p>\n" +
+            "                </div>\n" +
+            "            </div>";
+        $("#chatBox").append(myMessage);
+    }
+
+    /**
+     * 文件图标点击事件
+     */
+    $("#folder").click(function () {
+        console.log("123")
+        $("#file").trigger("click")
+    })
+    /**
+     *  聊天发送图片
+     * */
+    $("#file").on("change", function () {
+        let files = $("#file").prop("files");
+        let form = new FormData();
+        form.append("name", files[0].name);
+        form.append("file", files[0]);
+        $.ajax({
+            url: "/chat/uploadFile",
+            method: "post",
+            data: form,
+            /**
+             *必须false才会自动加上正确的Content-Type
+             */
+            contentType: false,
+            /**
+             * 必须false才会避开jQuery对 formdata 的默认处理
+             * XMLHttpRequest会对 formdata 进行正确的处理
+             */
+            processData: false,
+            headers: {"Authorization": token},
+            success: function (data) {
+                console.log(data.data);
+                if (data.data != false) {
+                    sendFile(data.data,"img")
+                    let myMessage = " <div class=\"message my_message\">\n" +
+                        "                <div class=\"chatBox_myphoto\">\n" +
+                        "                    <img src=" + sessionStorage.getItem("myavatar") + " alt=\"\" id=\"photo_m\">\n" +
+                        "                </div>\n" +
+                        "                <div class=\"message_all\">\n" +
+                        "                    <p><img src='" + data.data + "' style='object-fit: scale-down;max-height: 200px;max-width: 540px'><br><span>" + getNowTime() + "</span></p>\n" +
+                        "                </div>\n" +
+                        "            </div>";
+                    $("#chatBox").append(myMessage);
+                }
+            }
+        });
+    });
+
+    /**
+     *    聊天框发送图片
+     * */
+
+    function sendFile(fileName,type) {
+        let json = {
+            "sendId": getUserID(),
+            "message": fileName,
+            "sendTime": getNowTime(),
+            "receiveId": getCurrentChatID(),
+            "currentMilliseconds": Date.now(),
+            "type": type
+        };
+        ws.send(JSON.stringify(json));
+    }
+
+    /**
+     *  发送语音
+     */
+    $("#mic").click(function () {
+        $(".vchat").css({"opacity": "1"});
+        if (isMic) {
+            recorder.stop();
+            isMic = false;
+            recorder.getMp3Blob(function (blob) {
+                $("#audio").src = blob;
+                let au = " <div class=\"message my_message\">\n" +
+                    "          <div class=\"chatBox_myphoto\">\n" +
+                    "             <img src=" + sessionStorage.getItem("myavatar") + " alt=\"\" id=\"photo_m\">\n" +
+                    "          </div>\n" +
+                    "          <div class=\"message_all\">\n" +
+                    "             <audio class='au' autoplay controls src='" + URL.createObjectURL(blob) + "'><br><span>" + getNowTime() + "</span></audio>" +
+                    // "<br><span>" + getNowTime() + "</span>\n" +
+                    "          </div>" +
+                    "      </div>";
+                $("#chatBox").append(au);
+                console.log(URL.createObjectURL(blob));
+                console.log("音频到处结束" + blob);
+                uploadAudio(blob);
+                console.log("上传成功")
+            })
+        } else {
+            recorder.start();
+            isMic = true;
+        }
+
+    });
+
+    /**
+     * 发送语音消息
+     */
+    function sendAudio(fileName) {
+        let json = {
+            "sendId": getUserID(),
+            "message": fileName,
+            "sendTime": getNowTime(),
+            "receiveId": getCurrentChatID(),
+            "currentMilliseconds": Date.now(),
+            "type": "audio"
+        };
+        ws.send(JSON.stringify(json));
+    }
+
+    /**
+     * 上传音频
+     */
+    function uploadAudio(obj) {
+        let form = new FormData();
+        let fileName = generateUUID();
+        form.append("fileName", fileName);
+        form.append("file", obj + ".mp3");
+        console.log(form);
+        $.ajax({
+            url: "/chat/uploadAudio",
+            method: "post",
+            data: form,
+            /**
+             *必须false才会自动加上正确的Content-Type
+             */
+            contentType: false,
+            /**
+             * 必须false才会避开jQuery对 formdata 的默认处理
+             * XMLHttpRequest会对 formdata 进行正确的处理
+             */
+            processData: false,
+            headers: {"Authorization": token},
+            success: function (data) {
+                console.log(data.data);
+                if (data.data) {
+                    sendAudio(fileName);
+                }
+            }
+        });
+    }
+
+    /**
+     *  表情显示和隐藏
+     */
+
+    // $(document).click(function () {
+    //     $(".emojiBox").hide()
+    //     $(".vchat").css({"opacity":"0"});
+    // });
+    // 表情框
+
+    $("#emoji_button").click(function () {
+        let display = $(".emojiBox").css("display");
+        if (display == "block") {
+            $(".emojiBox").hide();
+        } else if (display == "none") {
+            $(".emojiBox").show()
+            //后台获取表情
+            $.ajax({
+                url: "/chat/emoji",
+                method: "get",
+                headers: {"Authorization": token},
+                success: function (data) {
+                    let emojis = data.data;
+                    let emojiBox = "<div>";
+                    for (let i = 0; i < emojis.length; i++) {
+                        emojiBox += "<div onclick='selectEmoji(this)'>" + emojis[i].emoji + "</div>";
+                    }
+                    emojiBox += "</div>";
+                    $(".emojiBox").html(emojiBox);
+                }
+            });
+        }
+    });
+
+    /**
+     *  选择一个表情
+     */
+    function selectEmoji(obj) {
+        console.log(obj);
+        console.log(obj.innerText);
+        let input = document.getElementById("message");
+        let s = $("#message").val();
+        let prefix = s.substring(0, input.selectionStart);
+        let suffix = s.substring(input.selectionStart, s.length);
+        let message = prefix + obj.innerText + suffix;
+        console.log(message);
+        $("#message").val(message);
+    }
+
+
+    /**
+     *
+     * 开启语音聊天
+     */
+    $("#audioCall").click(function () {
+
+    });
+
+    /**
+     * 开启视频聊天
+     */
+    $("#videoCall").click(function () {
+        console.log("12312313");
+        let display = $("#videoView").css("display");
+        if (display == "none") {
+            $("#videoView").show();
+            navigator.mediaDevices.getUserMedia(
+                {
+                    audio: true,
+                    video: true
+                }
+            ).then(function (stream) {
+                let video = document.querySelector("#local-video");
+                localStream = stream;
+                console.log("ccccccccccccccc " + localStream)
+                video.srcObject = stream;
+                call();
+            }).catch(function (error) {
+                console.log("本地视频流获取失败" + error);
+            });
+        } else if (display == "block") {
+            $("#videoView").hide();
+            //关闭摄像头
+            localStream.getTracks()[0].stop();
+            localStream.getTracks()[1].stop();
+            //关闭RTC连接
+            rtc.close();
+        }
+    });
+
+
+    /**
+     * 打开视频
+     **/
+    function call() {
+        let json = {
+            "sendId": getUserID(),
+            "message": "",
+            "sendTime": getNowTime(),
+            "receiveId": getCurrentChatID(),
+            "currentMilliseconds": Date.now(),
+            "type": "call"
+        };
+        let msg = JSON.stringify(json);
+        console.log("call" + msg);
+        ws.send(msg);
+    }
+
+    /**
+     *加入视频聊天
+     */
+    function join() {
+        $("#videoView").show();
+        navigator.mediaDevices.getUserMedia(
+            {
+                audio: true,
+                video: true
+            }
+        ).then(function (stream) {
+            let video = document.querySelector("#local-video");
+            localStream = stream;
+            console.log("ccccccccccccccc " + localStream)
+            video.srcObject = stream;
+            let json = {
+                "sendId": getUserID(),
+                "message": room,
+                "sendTime": getNowTime(),
+                "receiveId": getCurrentChatID(),
+                "currentMilliseconds": Date.now(),
+                "type": "join"
+            };
+            let msg = JSON.stringify(json);
+            console.log("call" + msg);
+            ws.send(msg);
+        }).catch(function (error) {
+            console.log("本地视频流获取失败" + error);
+        });
+    }
+
+    function live() {
+        try {
+            rtc = new RTCPeerConnection(config);
+            console.log(rtc)
+        } catch (e) {
+            console.log("RTC建立连接失败！" + e.message);
+        }
+
+        // 发送所有ICE候选者给对方
+        rtc.onicecandidate = function (evt) {
+            console.log(evt.candidate);
+            if (evt.candidate) {
+                let msg = {
+                    "sendId": getUserID(),
+                    "message": JSON.stringify(evt.candidate),
+                    "sendTime": getNowTime(),
+                    "receiveId": getCurrentChatID(),
+                    "currentMilliseconds": Date.now(),
+                    "type": "candidate"
+                }
+                send(msg);
+            }
+        }
+        rtc.ontrack = function (event) {
+            console.log("拉流");
+            document.querySelector("#remote-video").srcObject = event.streams[0];
+        };
+
+        localStream.getTracks().forEach(function (track) {
+            console.log("推流")
+            console.log(track);
+            rtc.addTrack(track, localStream);
+        });
+
+        rtc.createOffer().then(function (sdp) {
+            console.log("1号" + sdp)
+            rtc.setLocalDescription(sdp).then(function () {
+                let msg = {
+                    "sendId": getUserID(),
+                    "message": JSON.stringify(sdp),
+                    "sendTime": getNowTime(),
+                    "receiveId": getCurrentChatID(),
+                    "currentMilliseconds": Date.now(),
+                    "type": "offer"
+                };
+                send(msg);
+            })
+        }).catch();
+    }
+
+
+    function offer(message) {
+        rtc = new RTCPeerConnection(config);
+        console.log("11111111111111111111111111111111111")
+        console.log(JSON.parse(message.message))
+        let rsdp = JSON.parse(message.message);
+
+        rtc.onicecandidate = function (evt) {
+            console.log(evt.candidate);
+            if (evt.candidate) {
+                let msg = {
+                    "sendId": getUserID(),
+                    "message": JSON.stringify(evt.candidate),
+                    "sendTime": getNowTime(),
+                    "receiveId": getCurrentChatID(),
+                    "currentMilliseconds": Date.now(),
+                    "type": "candidate"
+                }
+                send(msg);
+            }
+        }
+
+        rtc.setRemoteDescription(rsdp);
+
+        rtc.createAnswer().then(function (sdp) {
+            console.log("sdp==================>" + sdp);
+            rtc.setLocalDescription(sdp).then(function () {
+                let msg = {
+                    "sendId": getUserID(),
+                    "message": JSON.stringify(sdp),
+                    "sendTime": getNowTime(),
+                    "receiveId": getCurrentChatID(),
+                    "currentMilliseconds": Date.now(),
+                    "type": "answer"
+                };
+                console.log("........" + JSON.stringify(msg));
+                send(msg);
+            });
+
+        });
+
+
+        rtc.ontrack = function (event) {
+            console.log("拉流");
+            // $("#remote-video").srcObject = event.streams[0];
+            document.querySelector("#remote-video").srcObject = event.streams[0];
+        };
+
+        localStream.getTracks().forEach(function (track) {
+            console.log("推流")
+            rtc.addTrack(track, localStream);
+        });
+
+    }
+
+
+    function answer(message) {
+        console.log("remoresdp=========================>" + JSON.parse(message.message));
+        console.log(message.message);
+        let rsdp = JSON.parse(message.message);
+        rtc.setRemoteDescription(new RTCSessionDescription(rsdp));
+    }
+
+    function candidate(message) {
+        console.log("7777777777777777777")
+        console.log(JSON.parse(message.message));
+        console.log("7777777777777777777")
+        let candidate = JSON.parse(message.message)
+        rtc.addIceCandidate(candidate);
+    }
+
+    /**
+     * 跳转匹配页面
+     */
+    function loading() {
+        window.open("/loading.html", "_self");
+    }
+
+    function activity() {
+        window.open("/activity.html", "_self");
+    }
+
+    // $("#emoji_button").click(function (event) {
+    //     event.stopPropagation();
+    // });
+    // $(".emojiBox").click(function (event) {
+    //     event.stopPropagation();
+    // });
+
+    // 语音框
+
+    /**
+     * 发送消息
+     * @param data
+     */
+    function send(data) {
+        ws.send(JSON.stringify(data));
+    }
+
+
+    /**
+     * 获取当前时间的封装
+     * @returns {string}
+     */
+    function getNowTime() {
+        let date = new Date();
+        return timeFormat(date);
+    }
+
+    /**
+     *   毫秒值转时间
+     */
+    function getMillisecondDate(millisecond) {
+        let date = new Date(millisecond);
+        return timeFormat(date);
+    }
+
+    function timeFormat(time) {
+        let date = time;
+        this.year = date.getFullYear();
+        this.month = date.getMonth() + 1;
+        this.date = date.getDate();
+        this.hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        this.minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        this.second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        let currentTime = this.year + '-' + this.month + '-' + this.date + '  ' + this.hour + ':' + this.minute + ':' + this.second;
+        return currentTime;
+    }
+
+
+    /**
+     * 生成全局uuid
+     */
+    function generateUUID() {
+        let d = new Date().getTime();
+        if (window.performance && typeof window.performance.now === "function") {
+            d += performance.now(); //use high-precision timer if available
+        }
+        let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
+
+
+    function setUserID(userID) {
+        this.UserID = userID;
+    }
+
+    function getUserID() {
+        return this.UserID;
+    }
+
+    function getHTTPUrl() {
+        let Protocol = "http://";
+        // let Protocol = "https://";
+
+        return Protocol + baseServerURL;
+    }
+
+    function getWebSocketUrl() {
+        let Protocol = "ws://";
+        // let Protocol = "wss://";
+        return Protocol + baseServerURL;
+    }
+
+    function setCurrentChatID(receiveId) {
+        this.CurrentChatID = receiveId;
+    }
+
+    function getCurrentChatID() {
+        return this.CurrentChatID;
+    }
+
+
+    // function getToken(url) {
+    //     let str = url.split("/");
+    //     let token = str[str.length - 1];
+    //     return token;
+    // }
+
+</script>
+
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
