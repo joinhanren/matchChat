@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.join.mapper.LoginMapper">
+
+    <resultMap id="user" type="com.join.entity.User">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="password" property="password"/>
+        <result column="status" property="status"/>
+        <result column="email" property="email"/>
+        <result column="phonenumber" property="phonenumber"/>
+        <result column="avatar" property="avatar"/>
+        <result column="user_type" property="userType"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <select id="login" parameterType="string" resultType="com.join.entity.User" resultMap="user">
+        select id, user_name, nick_name, password, status, email,
+               phonenumber, sex, avatar, user_type, create_by, create_time,
+               update_by, update_time, del_flag
+        from sys_user
+        where user_name=#{username}
+        limit 1;
+    </select>
+</mapper>

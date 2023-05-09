@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>注册</title>
+    <link rel="stylesheet" href="../assets/libs/particles/css/style.css">
+    <link rel="stylesheet" href="../assets/libs/sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
+    <script src="util/md5Util.js"></script>
+</head>
+<body>
+<!-- particles.js container -->
+<div id="particles-js"></div>
+<div id="wrapper">
+    <div>
+        <img src="../assets/img/zhihu_logo.png"/>
+        <h2>千年的承诺化为飞絮，浪漫红尘留住你我</h2>
+    </div>
+    <nav class="switch_nav">
+        <a href="javascript:;" id="switch_signup" class="switch_btn on">注册</a>
+        <a href="login.html" id="switch_login" class="switch_btn">登陆</a>
+        <div class="switch_bottom" id="switch_bottom"></div>
+    </nav>
+    <form method="post" action="">
+        <ul class="group_input">
+            <li>
+                <input type="text" placeholder="用户名" class="name required" id="name"/>
+            </li>
+            <li>
+                <input type="text" placeholder="手机号(仅支持中国大陆)或邮箱" class="mobile required" id="mobile"/>
+            </li>
+
+            <li>
+                <input type="text" style="width: 150px" placeholder="验证码" class="verification" id="verification">
+                <button type="button" style="width: 120px;height: 40px;background: #ffffff;border-radius: 3px;
+                border: 1px solid #0f88eb;color: #2492ec;" id="sendVerification">发送验证码
+                </button>
+            </li>
+
+            <li>
+                <input type="password" placeholder="密码(不少于6位)" class="psd required" id="psd"/>
+            </li>
+
+        </ul>
+        <button type="button" class="submit_btn" id="btnSubmit">注册天缘</button>
+        <span class="agreement-tip">点击「注册」按钮，即代表你同意<a href="javascript:;">《天缘协议》</a></span>
+    </form>
+    <div class="QRcode_btn">
+        <div type="submit" class="submit_btn download_btn">下载天缘App</div>
+        <div class="QRcode">
+            <img src="../assets/img/QRcode.png" alt="QRcode"/>
+            <div class="box"></div>
+        </div>
+
+    </div>
+
+
+    <div id="footer">
+        <span>&copy;2017天缘</span><span>·</span><a href="javascript:;"天缘</a><span>·</span><a
+            href="javascript:;">发现</a><span>·</span><a href="javascript:;">移动应用</a><span>·</span><a href="javascript:;">使用机构账号登录</a><span>·</span><a
+            href="javascript:;">联系我们</a><span>·</span><a href="javascript:;">遇见爱情来天缘</a><br/>
+        <span>·</span><a
+            href="javascript:;">京ICP证110745号</a><span>·</span><span>京公网安备11010802010035号</span><span>·</span><a
+            href="javascript:;">出版物经营许可证</a>
+    </div>
+</div>
+<script src="../assets/libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="../assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script src="../assets/libs/particles/particles.min.js"></script>
+<script src="../assets/libs/particles/js/app.js"></script>
+<!-- <script src="../assets/libs/particles/js/lib/stats.js"></script> -->
+<script>
+    // var count_particles, stats, update;
+    // stats = new Stats;
+    // stats.setMode(0);
+    // stats.domElement.style.position = 'absolute';
+    // stats.domElement.style.left = '0px';
+    // stats.domElement.style.top = '0px';
+    // document.body.appendChild(stats.domElement);
+    // count_particles = document.querySelector('.js-count-particles');
+    // update = function() {
+    // 	stats.begin();
+    // 	stats.end();
+    // 	if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+    // 		count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
+    // 	}
+    // 	requestAnimationFrame(update);
+    // };
+    // requestAnimationFrame(update);
+</script>
+<script>
+    $(".download_btn").click(function () {
+        if ($(".QRcode").css("display") == "none") {
+            $(".QRcode").show();
+            $(".download_btn").text("关闭二维码");
+        } else {
+            $(".QRcode").hide();
+            $(".download_btn").text("下载天缘App");
+        }
+    });
+</script>
+<script>
+    const check = {
+        nameLocalCheck: false,
+        nameNetCheck: false,
+        password: false,
+        emailOrPhone: false,
+        emailOrPhoneNetCheck: false,
+        verificationCode: false
+    };
+    $("form :input").keyup(function () {
+        let $parent = $(this).parent();
+        $parent.find(".msg").remove();
+        //验证姓名
+        if ($(this).is("#name")) {
+            checkUsername($parent, this);
+        }
+        //验证邮箱
+        if ($(this).is("#mobile")) {
+            checkEmail($parent, this);
+        }
+        //验证密码
+        if ($(this).is("#psd")) {
+            checkPassword($parent, this);
+        }
+
+    }).focus(function () {
+        $(this).triggerHandler("keyup");
+    });
+
+    /**
+     *  校验用户名
+     */
+    function checkUsername($parent, obj) {
+        let nameVal = $.trim(obj.value);
+        let regName = /[~#^$@%&!*()<>:;'"{}【】  ]/;
+        if (nameVal == "" || nameVal.length < 2 || regName.test(nameVal)) {
+            let errorMsg = " 姓名非空，长度2-20位，不包含特殊字符！";
+            check.nameLocalCheck = false;
+            $parent.append("<span class='msg onError'>" + errorMsg + "</span>");
+        } else {
+            let okMsg = " 输入正确";
+            check.nameLocalCheck = true;
+            $parent.append("<span id='success' class='msg onSuccess'>" + okMsg + "</span>");
+        }
+    }
+
+    /**
+     *校验邮箱
+     */
+    function checkEmail($parent, obj) {
+        let mobileVal = $.trim(obj.value);
+        let regMobile = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;
+        if (mobileVal == "" || !regMobile.test(mobileVal)) {
+            let errorMsg = " 请输入有效的邮箱！";
+            check.emailOrPhone = false;
+            $parent.append("<span id='ems' class='msg onError'>" + errorMsg + "</span>");
+        } else {
+            let okMsg = " 输入正确";
+            check.emailOrPhone = true;
+            $parent.append("<span id='ems' class='msg onSuccess'>" + okMsg + "</span>");
+        }
+    }
+
+    /**
+     * 校验密码
+     */
+    function checkPassword($parent, obj) {
+        let psdVal = $.trim(obj.value);
+        let regPsd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
+        if (psdVal == "" || !regPsd.test(psdVal)) {
+            let errorMsg = " 密码为6-20位字母、数字的组合！";
+            check.password = false;
+            $parent.append("<span class='msg onError'>" + errorMsg + "</span>");
+        } else {
+            let okMsg = " 输入正确";
+            check.password = true;
+            $parent.append("<span id='psdSuccess' class='msg onSuccess'>" + okMsg + "</span>");
+        }
+    }
+
+
+    $("#name").blur(function () {
+        /**
+         * 检查用户名是否已经注册
+         */
+        if (check.nameLocalCheck) {
+            $.ajax({
+                url: "/user/checkName/" + $("#name").val(),
+                type: "GET",
+                success: function (data) {
+                    if (!data.data) {
+                        let errorMsg = "用户名已存在,换一个试试吧";
+                        $("#success").attr('class', 'msg onError');
+                        $("#success").html(errorMsg);
+                        check.nameNetCheck = false;
+                    } else {
+                        check.nameNetCheck = true;
+                    }
+                }
+            })
+        }
+    });
+
+
+    /**
+     * 检查邮箱是否已经注册
+     */
+    $("#mobile").blur(function () {
+        if (check.emailOrPhone) {
+            $.ajax({
+                url: "/user/checkEmail/" + $("#mobile").val(),
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    if (!data.data) {
+                        let errorMsg = "该邮箱已注册！";
+                        $("#ems").attr('class', 'msg onError');
+                        $("#ems").html(errorMsg);
+                        check.emailOrPhoneNetCheck = false;
+                    } else {
+                        check.emailOrPhoneNetCheck = true;
+                        // $("#sendVerification").attr("disabled", false);
+                    }
+
+                }
+            })
+        }
+    })
+
+    //点击重置按钮时，通过trigger()来触发文本框的失去焦点事件
+    $("#btnSubmit").click(function () {
+        //trigger 事件执行完后，浏览器会为submit按钮获得焦点
+        $("form .required:input").trigger("blur");
+        let numError = $("form .onError").length;
+        if (numError) {
+            return false;
+        }
+        // alert('注册成功！')
+
+    });
+
+    $("#sendVerification").hover(function () {
+        $("#sendVerification").css('background', "#0f88eb");
+        $("#sendVerification").css('color', 'rgb(255,255,255)');
+    }, function () {
+        $("#sendVerification").css('background', '#ffffff');
+        $("#sendVerification").css('color', '#2492ec');
+    });
+
+
+    /**
+     * 发送验证码
+     */
+    $("#sendVerification").click(function () {
+        let email = $("#mobile").val();
+        if (check.emailOrPhone && check.emailOrPhoneNetCheck) {
+            $("#sendVerification").attr("disabled", true);
+            let time = 90;
+            let IntervalId = setInterval(function () {
+                $("#sendVerification").text(time + "后再试");
+                if (time == 0) {
+                    $("#sendVerification").text("发送验证码");
+                    clearInterval(IntervalId);
+                    $("#sendVerification").attr("disabled", false);
+                }
+                time--;
+            }, 1000);
+            $.ajax({
+                url: "/user/sendEmail/" + $("#mobile").val(),
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    let $parent = $("#sendVerification").parent();
+                    $parent.children("span").remove();
+                    if (data.data) {
+                        let okMsg = "发送成功！"
+                        $parent.append("<span  class='msg onSuccess'>" + okMsg + "</span>");
+                    } else {
+                        let errorMsg = "发送失败！"
+                        $parent.append("<span  class='msg onError'>" + errorMsg + "</span>");
+                    }
+                }
+            });
+        }
+    });
+
+    $("#btnSubmit").click(function () {
+        let registerVo=getRegisterVo();
+        if (!$.isEmptyObject(registerVo)) {
+            $.ajax({
+                url: "/user/register",
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                data: JSON.stringify(registerVo) ,
+                success: function (data) {
+                    if (data.data) {
+                        alert("注册成功！")
+                        window.location.href = "/login.html";
+                    } else {
+                       alert("注册失败！")
+                    }
+                }
+            });
+        } else {
+            alert("我知道你是专业的，请不要修改js代码😊")
+        }
+
+    });
+
+    function getRegisterVo() {
+        if (check.nameLocalCheck && check.nameNetCheck &&
+            check.emailOrPhone && check.emailOrPhoneNetCheck && check.password) {
+            let registerVo = {
+                username: $("#name").val(),
+                email: $("#mobile").val(),
+                verification: $("#verification").val(),
+                password: md5($("#psd").val(), 32),
+            };
+            return registerVo;
+        }
+        return {};
+    }
+
+
+</script>
+</body>
+</html>
